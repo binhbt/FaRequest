@@ -1,6 +1,6 @@
 # repo
-```gradle
 build.gradle for allprojects
+```gradle
 	allprojects {
 		repositories {
 			...
