@@ -1,8 +1,6 @@
 package com.vn.vega.net;
 
 
-import android.util.Log;
-
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.util.ArrayList;
@@ -15,9 +13,9 @@ import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
-import retrofit2.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 /**
