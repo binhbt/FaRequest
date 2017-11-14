@@ -1,4 +1,4 @@
-package com.vn.vega.net;
+package com.vn.fa.net;
 
 import org.junit.Test;
 
