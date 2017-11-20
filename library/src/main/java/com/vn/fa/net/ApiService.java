@@ -1,6 +1,8 @@
 package com.vn.fa.net;
 
 
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.util.ArrayList;
@@ -14,7 +16,6 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
@@ -60,7 +61,7 @@ public class ApiService {
         Retrofit.Builder builder=  new Retrofit.Builder()
                 .baseUrl(this.baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(okBuilder.build());
         if (this.isLogging || this.interceptor != null){
             HttpLoggingInterceptor okInterceptor = new HttpLoggingInterceptor();

@@ -1,16 +1,15 @@
 package com.vn.fa.net;
 
 
-
 import java.util.HashMap;
 import java.util.Map;
 
-import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 
 /**
  * Created by binhbt on 6/20/2016.
@@ -25,8 +24,8 @@ public class RequestLoader {
         public void onFinish(T result);
     }
     static volatile RequestLoader singleton = null;
-    private Map<Object, CompositeSubscription> mapRequest = new HashMap<>();
-    private Map<Object, CompositeSubscription> containerRequest = new HashMap<>();
+    private Map<Object, CompositeDisposable > mapRequest = new HashMap<>();
+    private Map<Object, CompositeDisposable> containerRequest = new HashMap<>();
     public static RequestLoader getDefault() {
         if (singleton == null) {
             synchronized (RequestLoader.class) {
@@ -37,37 +36,37 @@ public class RequestLoader {
         }
         return singleton;
     }
-    public void add(Subscription subcribtion, Object tag){
-        CompositeSubscription compositeSubscription = mapRequest.get(tag);
+    public void add(Disposable subcribtion, Object tag){
+        CompositeDisposable  compositeSubscription = mapRequest.get(tag);
         if (compositeSubscription == null){
-            compositeSubscription = new CompositeSubscription();
+            compositeSubscription = new CompositeDisposable ();
         }
         compositeSubscription.add(subcribtion);
         mapRequest.put(tag, compositeSubscription);
     }
 
     public void cancelByTag(Object tag){
-        CompositeSubscription compositeSubscription = mapRequest.get(tag);
+        CompositeDisposable  compositeSubscription = mapRequest.get(tag);
         if (compositeSubscription != null){
-            compositeSubscription.unsubscribe();
+            compositeSubscription.dispose();
             mapRequest.remove(tag);
         }else{
             //ignore it. i don't care
             //throw new IllegalArgumentException("Request not found. Can not cancel");
         }
     }
-    public void addToContainerGroup(Subscription subcribtion, Object container){
-        CompositeSubscription compositeSubscription = containerRequest.get(container);
+    public void addToContainerGroup(Disposable subcribtion, Object container){
+        CompositeDisposable  compositeSubscription = containerRequest.get(container);
         if (compositeSubscription == null){
-            compositeSubscription = new CompositeSubscription();
+            compositeSubscription = new CompositeDisposable ();
         }
         compositeSubscription.add(subcribtion);
         containerRequest.put(container, compositeSubscription);
     }
     public void cancelAll(Object container){
-        CompositeSubscription compositeSubscription = containerRequest.get(container);
+        CompositeDisposable  compositeSubscription = containerRequest.get(container);
         if (compositeSubscription != null){
-            compositeSubscription.unsubscribe();
+            compositeSubscription.dispose();
             containerRequest.remove(container);
         }else{
             //ignore it. i don't care
@@ -101,7 +100,7 @@ public class RequestLoader {
             this.tag = tag;
             return this;
         }
-        public Subscription build(){
+        public Disposable build(){
             if (callback == null){
                 callback = new CallBack() {
                     @Override
@@ -130,15 +129,15 @@ public class RequestLoader {
             }
             //Onstart
             callback.onStart();
-            Subscription sub = observable.subscribeOn(Schedulers.io())
+            Disposable sub = observable.subscribeOn(Schedulers.io())
                     // Observe result in the main thread to be able to update UI
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnUnsubscribe(new Action0() {
-                        @Override
-                        public void call() {
-                            cancel.onCancel();
-                        }
-                    })
+//                    .doOnUnsubscribe(new Action0() {
+//                        @Override
+//                        public void call() {
+//                            cancel.onCancel();
+//                        }
+//                    })
                     .subscribe((data) -> {
                         callback.onFinish(data);
                     },(error) -> {
