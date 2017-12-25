@@ -15,6 +15,7 @@ import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -26,10 +27,12 @@ public class ApiService {
     private String baseUrl;
     private boolean isLogging;
     private Interceptor interceptor;
-    public ApiService(String baseUrl, boolean isLogging, Interceptor interceptor){
+    private Converter.Factory converterFactory;
+    public ApiService(String baseUrl, boolean isLogging, Interceptor interceptor, Converter.Factory converterFactory){
         this.baseUrl = baseUrl;
         this.isLogging = isLogging;
         this.interceptor = interceptor;
+        this.converterFactory = converterFactory;
     }
 
     public <T> T create(final Class<T> clazz){
@@ -60,7 +63,7 @@ public class ApiService {
 
         Retrofit.Builder builder=  new Retrofit.Builder()
                 .baseUrl(this.baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(converterFactory == null?GsonConverterFactory.create():converterFactory)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(okBuilder.build());
         if (this.isLogging || this.interceptor != null){
@@ -84,6 +87,7 @@ public class ApiService {
         private String baseUrl;
         private boolean isLogging;
         private Interceptor interceptor;
+        private Converter.Factory converterFactory;
         public Builder baseUrl(String baseUrl){
             this.baseUrl = baseUrl;
             return this;
@@ -92,8 +96,12 @@ public class ApiService {
             this.isLogging = isLogging;
             return this;
         }
+        public Builder converterFactory(Converter.Factory converterFactory){
+            this.converterFactory = converterFactory;
+            return this;
+        }
         public ApiService build(){
-            return new ApiService(this.baseUrl, this.isLogging, this.interceptor);
+            return new ApiService(this.baseUrl, this.isLogging, this.interceptor, this.converterFactory);
         }
         public Builder interceptor(Interceptor intercepter){
             this.interceptor  = intercepter;
