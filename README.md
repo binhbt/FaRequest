@@ -9,6 +9,6 @@ allprojects {
     }
 }
 //App project
-        implementation 'com.github.binhbt:Fabase:1.5.4' ```
+        implementation 'com.github.binhbt:FaR:1.3.3' ```
 -  Demo at:
 https://github.com/binhbt/FADemo
