@@ -8,5 +8,5 @@ allprojects {
     }
 }
 //App project
-compile 'com.github.binhbt:FaRq:$version'
+    compile 'com.github.binhbt:FaRequest:1.3.3'
 ```
