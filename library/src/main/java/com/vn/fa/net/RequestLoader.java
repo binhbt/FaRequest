@@ -74,7 +74,7 @@ public class RequestLoader {
         }
     }
     public static final class Builder {
-        public static final String DEFAULT_TAG = "VEGA_REQUEST";
+        public static final String DEFAULT_TAG = "FA_REQUEST";
         private OnCancelRequest cancel;
         private CallBack callback;
         private Object container;
